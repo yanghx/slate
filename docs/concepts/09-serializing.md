@@ -53,11 +53,15 @@ For example, here's a similar `serialize` function for HTML:
 
 ```js
 import escapeHtml from 'escape-html'
-import { Node, Text } from 'slate'
+import { Text } from 'slate'
 
 const serialize = node => {
   if (Text.isText(node)) {
-    return escapeHtml(node.text)
+    let string = escapeHtml(node.text)
+    if (node.bold) {
+      string = `<strong>${string}</strong>`
+    }
+    return string
   }
 
   const children = node.children.map(n => serialize(n)).join('')
@@ -165,7 +169,11 @@ const deserialize = el => {
     return null
   }
 
-  const children = Array.from(el.childNodes).map(deserialize)
+  let children = Array.from(el.childNodes).map(deserialize)
+
+  if (children.length === 0) {
+    children = [{ text: '' }]
+  }
 
   switch (el.nodeName) {
     case 'BODY':
@@ -198,7 +206,7 @@ deserialize(document.body)
 
 With this input:
 
-```js
+```html
 <p>An opening paragraph with a <a href="https://example.com">link</a> in it.</p>
 <blockquote><p>A wise quote.</p></blockquote>
 <p>A closing paragraph!</p>

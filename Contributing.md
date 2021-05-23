@@ -2,14 +2,19 @@
 
 Want to contribute to Slate? That would be awesome!
 
-- [Reporting Bugs](#reporting-bugs)
-- [Asking Questions](#asking-questions)
-- [Submitting Pull Requests](#submitting-pull-requests)
-- [Repository Setup](#repository-setup)
-- [Running Examples](#running-examples)
-- [Running Tests](#running-tests)
-- [Testing Input Methods](#testing-input-methods)
-- [Publishing Releases](#publishing-releases)
+- [Contributing](#contributing)
+  - [Reporting Bugs](#reporting-bugs)
+  - [Asking Questions](#asking-questions)
+  - [Submitting Pull Requests](#submitting-pull-requests)
+  - [Repository Setup](#repository-setup)
+  - [Running Examples](#running-examples)
+  - [Running Tests](#running-tests)
+  - [Testing Input Methods](#testing-input-methods)
+  - [Publishing Releases](#publishing-releases)
+    - [Publishing Normal `@latest` Release](#publishing-normal-latest-release)
+    - [Publishing `@next` Release](#publishing-next-release)
+    - [Publishing `@experimental` Release](#publishing-experimental-release)
+    - [Running Prerelease Script](#running-prerelease-script)
 
 ## Reporting Bugs
 
@@ -45,7 +50,7 @@ The slate repository is a monorepo that is managed with [lerna](https://github.c
 
 To run the build, you need to have the Slate repository cloned to your computer. After that, you need to `cd` into the directory where you cloned it, and install the dependencies with `yarn` and build the monorepo:
 
-```
+```shell
 yarn install
 yarn build
 ```
@@ -56,7 +61,7 @@ To run the examples, start by building the monorepo as described in the [Reposit
 
 Then you can start the examples server with:
 
-```
+```shell
 yarn start
 ```
 
@@ -66,7 +71,7 @@ To run the tests, start by building the monorepo as described in the [Repository
 
 Then you can rerun the tests with:
 
-```
+```shell
 yarn test
 ```
 
@@ -74,16 +79,58 @@ If you need to debug something, you can add a `debugger` line to the source, and
 
 If you only want to run a specific test or tests, you can run `yarn test --fgrep="slate-react rendering"` flag which will filter the tests being run by grepping for the string in each test. (This is a Mocha flag that gets passed through.)
 
+In addition to tests you should also run the linter:
+
+```shell
+yarn lint
+```
+
+This will catch TypeScript, Prettier, and Eslint errors.
+
 ## Testing Input Methods
 
 [Here's a helpful page](https://github.com/Microsoft/vscode/wiki/IME-Test) detailing how to test various input scenarios on Windows, Mac and Linux.
 
 ## Publishing Releases
 
+**Important**: When creating releases using Lerna with the instructions below, you will be given choices around how to increase version numbers. You should always use a `major`, `minor` or `patch` release and must never use a `prerelease`. If a prerelease is used, the root package will not link to the packages in the `packages` directory creating hard to diagnose issues.
+
+### Publishing Normal `@latest` Release
+
 Since we use [Lerna](https://lerna.js.org) to manage the Slate packages this is fairly easy, just run:
 
-```js
-yarn release
+```shell
+yarn release:latest
 ```
 
 And follow the prompts Lerna gives you.
+
+Note that this will automatically run the prelease script first that will build, test and lint before attempting to publish.
+
+### Publishing `@next` Release
+
+If we are unsure as to the stability of a release because there are significant changes and/or particularly complex changes, release with the `@next` tag.
+
+```shell
+yarn release:next
+```
+
+And follow the prompts Lerna gives you.
+
+### Publishing `@experimental` Release
+
+If you need to create an experimental release to see how a published package will behave during an actual publish, release with the `@experimental` tag. End users should have no expectation that an `@experimental` release will be usable.
+
+```shell
+yarn release:experimental
+```
+
+### Running Prerelease Script
+
+If we want to make sure that Slate code follows the preparations for a release but without actually publishing, run:
+
+```shell
+yarn prerelease
+```
+
+Which will build, test and lint Slate code.
